@@ -1,0 +1,21 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "StaffPass Enterprise API",
+    "version": "0.0.0-unavailable",
+    "description": "No hay operaciones publicadas. La API Enterprise requiere plan Enterprise vigente, api_enabled explícito y un token de integración válido; esos controles todavía no están implementados.",
+    "contact": {
+      "name": "StaffPass"
+    }
+  },
+  "paths": {},
+  "x-staffpass-availability": {
+    "status": "NOT_IMPLEMENTED",
+    "publicOperations": 0,
+    "requiredGates": [
+      "ENTERPRISE_PLAN",
+      "API_ENABLED",
+      "VALID_INTEGRATION_TOKEN"
+    ]
+  }
+}

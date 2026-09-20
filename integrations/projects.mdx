@@ -1,0 +1,64 @@
+---
+title: "Proyectos de integración"
+description: "Catálogo propuesto de repositorios y su relación con el portal público."
+---
+
+<Note>
+Los proyectos siguientes son públicos bajo la organización oficial
+[`Staff-Pass`](https://github.com/Staff-Pass). Publican contratos, gates,
+pruebas sintéticas y documentación; el runtime tenant-scoped continúa en el
+backend canónico hasta completar una extracción con paridad verificable.
+</Note>
+
+## Arquitectura pública
+
+El portal central es el hub. Cada integración tendrá una página pública de
+estado y enlazará a su proyecto cuando exista. Los repositorios deberán enlazar
+de regreso a la guía canónica para evitar contratos divergentes.
+
+```text
+StaffPass Developers
+├── Contabilidad
+│   └── staffpass-integration-odoo
+├── Planilla y fiscal
+│   ├── staffpass-integration-sipe
+│   └── staffpass-integration-dgi-planilla-03
+├── Bancos
+│   ├── staffpass-integration-ach-banco-general
+│   ├── staffpass-integration-ach-banistmo
+│   └── staffpass-integration-ach-bac-panama
+├── Asistencia
+│   └── staffpass-integration-zkteco
+└── Plataforma
+    ├── staffpass-integration-firebase-fcm
+    ├── staffpass-integration-amazon-ses
+    └── staffpass-integration-cloudflare-r2
+```
+
+## Catálogo público
+
+| Proyecto | Implementación actual | Acoplamiento | Frontera publicada |
+| --- | --- | --- | --- |
+| [Odoo](https://github.com/Staff-Pass/staffpass-integration-odoo) | Adaptador JSON-2 versionado y transporte seguro | Medio | Contrato y readiness; orquestación permanece en backend |
+| [SIPE](https://github.com/Staff-Pass/staffpass-integration-sipe) | Workbook, validación, servicio y API administrativa | Alto | Contrato y gates fiscales; sin Prisma, storage ni auth |
+| [DGI Planilla 03](https://github.com/Staff-Pass/staffpass-integration-dgi-planilla-03) | Workbook, diccionario, validación y workflow | Alto | Contrato y gates fiscales; sin Prisma, storage ni auth |
+| [ACH Banco General](https://github.com/Staff-Pass/staffpass-integration-ach-banco-general) | Adapter sobre contrato explícito compartido | Medio | Contrato bancario y gates de aceptación |
+| [ACH Banistmo](https://github.com/Staff-Pass/staffpass-integration-ach-banistmo) | Adapter sobre contrato explícito compartido | Medio | Contrato bancario y gates de aceptación |
+| [ACH BAC Panamá](https://github.com/Staff-Pass/staffpass-integration-ach-bac-panama) | Adapter sobre contrato explícito compartido | Medio | Contrato bancario y gates de aceptación |
+| [ZKTeco](https://github.com/Staff-Pass/staffpass-integration-zkteco) | Puerto y simulador sintético; no transporte físico | Alto | Contrato y simulador; sin homologación física |
+| [Firebase FCM](https://github.com/Staff-Pass/staffpass-integration-firebase-fcm) | Outbox, preferencias, worker y scheduler | Alto | Contrato de transporte; outbox permanece tenant-scoped |
+| [Amazon SES](https://github.com/Staff-Pass/staffpass-integration-amazon-ses) | Transporte SES v2 y plantillas StaffPass | Bajo/medio | Contrato sin configuración, identidad ni secretos |
+| [Cloudflare R2](https://github.com/Staff-Pass/staffpass-integration-cloudflare-r2) | Servicio S3-compatible restringido a R2 | Medio | Contrato de storage; políticas tenant permanecen en backend |
+
+## Lo que no debe duplicarse
+
+- modelos Prisma y migraciones completos;
+- guards Firebase o rutas administrativas;
+- secretos, endpoints de cliente o fixtures con PII;
+- lógica de tenant y permisos copiada en varios proyectos;
+- contratos fiscales o bancarios no validados;
+- afirmaciones de compatibilidad de proveedor sin evidencia externa.
+
+La extracción debe empezar por puertos y adaptadores puros. La aplicación
+StaffPass conserva orquestación, tenant, auditoría y persistencia hasta que una
+interfaz versionada permita moverlos sin bifurcar reglas.

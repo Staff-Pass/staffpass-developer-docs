@@ -1,0 +1,38 @@
+---
+title: "Permisos y tenant"
+description: "Modelo de autorización esperado y controles internos existentes."
+---
+
+## Regla principal
+
+Un token de integración deberá pertenecer a una sola empresa y autorizar solo
+scopes publicados. Un identificador de tenant suministrado por el cliente nunca
+debe ampliar el tenant ligado al token.
+
+Los nombres de scopes externos todavía no están definidos. Esta guía no reutiliza
+permisos del panel como si fueran scopes públicos.
+
+## Controles internos auditados
+
+Las rutas administrativas existentes derivan el tenant del perfil autenticado y
+combinan, según el módulo, controles de Firebase, módulo habilitado, permiso y
+capacidad de RR. HH. Las mutaciones sensibles también pueden exigir autenticación
+reciente y separación de funciones.
+
+Estos controles aportan patrones de seguridad, pero no convierten las rutas
+administrativas en una API externa.
+
+## Política futura mínima
+
+Cada operación publicada deberá declarar:
+
+- scope requerido;
+- tenant de la credencial;
+- campos de entrada y salida permitidos;
+- idempotencia y semántica de reintento;
+- datos sensibles omitidos o enmascarados;
+- evento de auditoría generado;
+- estados que requieren conciliación humana.
+
+Una credencial sin scopes, tenant, vigencia o activación verificable debe recibir
+un rechazo; nunca permisos por defecto.

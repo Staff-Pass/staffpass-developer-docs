@@ -1,0 +1,39 @@
+---
+title: "Autenticación"
+description: "Diferencia entre sesiones de producto y futuros tokens de integración."
+---
+
+## API Enterprise
+
+La API Enterprise requerirá un token de integración emitido para una empresa
+con API activa. El formato, prefijo, encabezado, expiración y scopes aún no están
+implementados; por tanto no se documenta una sintaxis provisional.
+
+<Warning>
+No envíes un Firebase ID token del panel como credencial de integración. Tampoco
+uses credenciales de dispositivo, tokens de descarga, claves de proveedor ni
+referencias a secretos. Son dominios de autenticación distintos.
+</Warning>
+
+## Qué existe hoy
+
+El backend administrativo extrae un bearer token Firebase, verifica revocación,
+busca el perfil administrativo y deriva el tenant, los módulos y permisos. Las
+rutas de autoservicio verifican además el vínculo con el empleado. TimeClock y
+el scheduler tienen mecanismos propios. Ninguno de ellos implementa el contrato
+de token Enterprise.
+
+## Requisitos para la implementación futura
+
+El mecanismo de integración deberá:
+
+- almacenar solo un hash o identificador no reversible del secreto;
+- ligar cada token a un tenant único;
+- exigir `Enterprise` y `api_enabled` en cada solicitud;
+- tener scopes explícitos, expiración, revocación y rotación;
+- registrar uso sin copiar el token a logs;
+- usar comparación segura y fallar cerrado ante estado ausente;
+- mantener separados los tokens de sandbox y producción.
+
+La documentación se actualizará con ejemplos ejecutables únicamente después de
+que esos controles existan y estén cubiertos por pruebas.

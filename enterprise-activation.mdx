@@ -1,0 +1,45 @@
+---
+title: "Activación Enterprise"
+description: "Gates comerciales y técnicos requeridos para habilitar la API."
+---
+
+## Requisitos obligatorios
+
+La activación futura será cerrada por defecto. Una empresa deberá cumplir las
+tres condiciones siguientes:
+
+| Gate | Evidencia esperada | Estado actual |
+| --- | --- | --- |
+| Plan Enterprise | Contrato y vigencia asociados a la empresa | Política definida; control técnico no implementado |
+| API activa | `api_enabled` autoritativo y auditable | No existe en el esquema actual |
+| Token válido | Hash, scopes, expiración, revocación y último uso | No existe un modelo de token de integración |
+
+## Flujo previsto de activación
+
+1. StaffPass confirma el plan Enterprise y la empresa exacta.
+2. Se revisan finalidad, datos, retención y responsables del cliente.
+3. Un operador autorizado activa la API para ese tenant.
+4. StaffPass emite un token una sola vez y almacena únicamente una
+   representación no reversible.
+5. El cliente prueba exclusivamente operaciones incluidas en su OpenAPI vigente.
+6. Se registra aceptación del piloto antes de usar datos o proveedores reales.
+
+<Warning>
+Este flujo describe gates obligatorios del producto, no una funcionalidad ya
+implementada. No se debe prometer una fecha, token o endpoint hasta que el
+backend y sus pruebas implementen el control completo.
+</Warning>
+
+## Desactivación y compromiso
+
+Ante pérdida, exposición o resultado incierto:
+
+- detén nuevas solicitudes;
+- revoca el token afectado antes de emitir otro;
+- conserva identificadores e idempotency keys para conciliación;
+- no reintentes operaciones financieras o de proveedor cuyo resultado sea
+  desconocido;
+- revisa auditoría por tenant y alcance antes de reactivar.
+
+La desactivación debe conservar evidencia, snapshots y resultados desconocidos;
+no debe borrar el historial necesario para investigar.

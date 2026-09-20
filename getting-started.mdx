@@ -1,0 +1,45 @@
+---
+title: "Primeros pasos"
+description: "Prepara una futura integración sin depender de endpoints internos."
+---
+
+## Antes de comenzar
+
+La API Enterprise todavía no es consumible. No uses una sesión Firebase del
+panel, un token de TimeClock, un token de descarga, una credencial de proveedor
+ni una referencia opaca a secretos como sustituto de un token de integración.
+
+Puedes avanzar hoy con estas tareas:
+
+1. Define el caso de uso y el sistema que será fuente de verdad.
+2. Identifica la empresa de StaffPass que participará en el piloto.
+3. Clasifica los datos personales, laborales, bancarios o biométricos que
+   podrían intervenir.
+4. Define idempotencia, conciliación y manejo de resultados desconocidos.
+5. Reúne documentación oficial y vigente del proveedor, sin adjuntar secretos.
+6. Espera una especificación OpenAPI con operaciones antes de programar llamadas.
+
+## Criterio de disponibilidad
+
+Una integración se considera disponible solo cuando exista evidencia de todos
+estos controles:
+
+- el cliente tiene plan Enterprise vigente;
+- la empresa tiene `api_enabled = true` en una fuente autoritativa;
+- se emitió un token de integración con alcance, expiración y revocación;
+- el gateway valida los tres gates en cada solicitud;
+- la operación aparece en la especificación OpenAPI publicada;
+- existen límites, errores y política de versión definidos para esa operación.
+
+Hoy esos controles no están implementados en el backend. Una demostración local,
+una pantalla administrativa o una respuesta de una ruta interna no los sustituye.
+
+## No programes contra rutas internas
+
+Los controladores actuales están diseñados para el panel, la aplicación móvil,
+TimeClock, tareas internas o herramientas públicas específicas. Sus contratos
+pueden cambiar sin la política de compatibilidad de la futura API Enterprise.
+
+Cuando la API se habilite, el equipo de StaffPass entregará una base URL, un
+token de integración y una versión OpenAPI compatibles entre sí. Si falta uno
+de esos elementos, detén la integración y solicita confirmación.

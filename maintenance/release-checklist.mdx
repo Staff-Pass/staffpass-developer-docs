@@ -1,0 +1,37 @@
+---
+title: "Checklist de publicación"
+description: "Controles previos a publicar o ampliar la documentación de integraciones."
+---
+
+## Producto y seguridad
+
+- [ ] El plan Enterprise existe en una fuente autoritativa.
+- [ ] `api_enabled` existe, es tenant-scoped y falla cerrado.
+- [ ] Los tokens de integración tienen hash, scopes, expiración y revocación.
+- [ ] Ninguna sesión Firebase se acepta como token de integración.
+- [ ] Hay pruebas negativas de tenant, plan, activación, scope y token.
+- [ ] No aparecen secretos, PII, datos bancarios ni URLs firmadas en ejemplos.
+
+## Contrato
+
+- [ ] Cada operación pública está en OpenAPI y tiene propietario.
+- [ ] Se documentan idempotencia, paginación, límites y errores.
+- [ ] El servidor y el playground apuntan solo al gateway externo autorizado.
+- [ ] Las rutas administrativas, de dispositivo y scheduler están excluidas.
+- [ ] La versión publicada coincide con el SHA probado.
+
+## Evidencia
+
+- [ ] Local, CI, staging, proveedor/dispositivo y producción se reportan por separado.
+- [ ] Un fixture o simulador no se presenta como validación externa.
+- [ ] Los estados `UNKNOWN` conservan evidencia y bloquean reintentos inseguros.
+- [ ] Los layouts, plantillas y contratos externos tienen fuente, fecha y hash.
+
+## Publicación
+
+- [x] El propietario decidió que las guías generales serán públicas.
+- [ ] La referencia ejecutable permanece protegida o ausente hasta implementar los gates Enterprise.
+- [ ] Se revisó el plan vigente de Mintlify y no se contrató un plan de pago.
+- [ ] DNS, GitHub App y despliegue tienen autorización específica.
+
+No publiques si alguna condición de seguridad o visibilidad sigue sin resolver.

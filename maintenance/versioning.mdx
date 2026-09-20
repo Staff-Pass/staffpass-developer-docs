@@ -1,0 +1,40 @@
+---
+title: "Versionado"
+description: "Política para mantener documentación, OpenAPI y runtime sincronizados."
+---
+
+## Fuente de verdad
+
+Cuando la API exista, OpenAPI debe generarse o validarse desde el contrato del
+gateway externo. La documentación manual explica flujos y decisiones; no puede
+añadir rutas, campos o estados ausentes del contrato.
+
+## Cambios compatibles
+
+Se consideran candidatos compatibles, sujetos a prueba:
+
+- agregar una operación nueva;
+- agregar un campo de respuesta opcional;
+- agregar un código de error documentado sin cambiar el significado de éxito;
+- ampliar un enum solo cuando los clientes estén obligados a tolerar valores
+  desconocidos.
+
+## Cambios incompatibles
+
+Requieren una nueva versión y una ventana de migración:
+
+- eliminar o renombrar una operación o campo;
+- cambiar obligatoriedad, tipo o semántica;
+- cambiar idempotencia o estados terminales;
+- endurecer límites por debajo del contrato vigente;
+- reutilizar un código de error con otro significado.
+
+## Cadencia de revisión
+
+En cada cambio de integración:
+
+1. audita código, migraciones, guards y pruebas;
+2. actualiza OpenAPI y guías en el mismo cambio;
+3. ejecuta validación de enlaces y especificación;
+4. registra qué fue probado localmente y qué evidencia externa falta;
+5. publica solo con autorización y tras confirmar visibilidad pública o privada.

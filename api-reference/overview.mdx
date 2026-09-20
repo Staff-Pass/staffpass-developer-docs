@@ -1,0 +1,37 @@
+---
+title: "Referencia OpenAPI"
+description: "Especificación deliberadamente vacía mientras no exista una API externa segura."
+---
+
+La especificación local está en [`openapi.json`](./openapi.json) y usa OpenAPI
+3.1.0. Su objeto `paths` está vacío de forma intencional.
+
+```json
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "StaffPass Enterprise API",
+    "version": "0.0.0-unavailable"
+  },
+  "paths": {}
+}
+```
+
+No se importaron controladores internos al documento. Hacerlo expondría rutas
+que dependen de Firebase, permisos del panel o credenciales de dispositivo, sin
+los gates Enterprise requeridos.
+
+## Condición para agregar una operación
+
+Una operación solo puede aparecer aquí cuando:
+
+1. existe un controlador externo dedicado;
+2. valida plan Enterprise, `api_enabled`, token, tenant y scope;
+3. tiene DTOs y respuestas versionadas;
+4. define idempotencia, paginación, límites y códigos de error;
+5. cuenta con pruebas de autenticación y aislamiento entre tenants;
+6. fue aprobada para publicación.
+
+El portal no configura un servidor ni un playground mientras no haya una base
+URL externa autorizada. Así se evita que la documentación invite a ejecutar
+rutas internas por accidente.

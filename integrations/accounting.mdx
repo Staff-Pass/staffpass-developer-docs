@@ -1,0 +1,29 @@
+---
+title: "Contabilidad y Odoo"
+description: "Contrato local del conector contable y evidencia que falta."
+---
+
+## Implementación local
+
+El backend conserva snapshots, asientos balanceados, mapeos de cuentas y centros
+de costo, separación de funciones, artefactos privados y estados durables. El
+adaptador local está versionado como `odoo-19-json2-v1` y el transporte bloquea
+credenciales embebidas, IPs literales, destinos privados/reservados y
+redirecciones.
+
+Un timeout o resultado ambiguo se conserva como `UNKNOWN`; no se reintenta de
+forma ciega. La intención se registra antes de cualquier envío.
+
+## Lo que falta
+
+La conexión externa permanece deshabilitada. Antes de un piloto se debe confirmar:
+
+- versión, edición y hosting de Odoo;
+- instancia y compañía autorizadas;
+- plan de cuentas y centros de costo aprobados;
+- contrato de autenticación y referencia de secreto;
+- sandbox atribuible y criterios de conciliación;
+- procedimiento de reverso y resultado `UNKNOWN`.
+
+La generación local de un CSV no demuestra importación, contabilización ni
+aceptación de Odoo. La API Enterprise no expone operaciones contables hoy.

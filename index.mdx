@@ -1,0 +1,43 @@
+---
+title: "StaffPass Developers"
+description: "Estado verificable de la API Enterprise y las integraciones de StaffPass."
+---
+
+<Warning>
+La API de integraciones para clientes todavía no está disponible. El backend
+actual no implementa el plan Enterprise, la bandera `api_enabled`, tokens de
+integración ni un guard dedicado para esos tokens. Por eso esta documentación
+no publica endpoints operativos ni ofrece credenciales de prueba.
+</Warning>
+
+Esta guía separa tres cosas que no deben confundirse:
+
+1. Las funciones de StaffPass implementadas y verificadas localmente.
+2. La validación externa con un proveedor, portal, banco o dispositivo.
+3. La futura API para clientes Enterprise.
+
+El acceso futuro requerirá simultáneamente un contrato Enterprise vigente, la
+API activada de forma explícita para la empresa y un token de integración
+válido. Cumplir solo una o dos condiciones no autorizará una solicitud.
+
+## Estado actual
+
+| Área | Estado | Qué significa |
+| --- | --- | --- |
+| Portal de documentación | Repositorio público preparado | El contenido está versionado públicamente; el hosting Mintlify y el dominio todavía no están activados. |
+| API Enterprise | `NOT_IMPLEMENTED` | No hay endpoints externos autorizados, activación ni tokens de integración. |
+| OpenAPI público | Sin operaciones | La especificación contiene `paths: {}` para evitar publicar rutas internas. |
+| Integraciones | Mixto | Varias capacidades están implementadas localmente, pero continúan pendientes de evidencia externa. |
+
+<Note>
+Las rutas del panel administrativo usan identidad Firebase y permisos internos.
+No forman parte de la API Enterprise y no deben integrarse desde sistemas de
+clientes.
+</Note>
+
+## Siguiente paso
+
+Consulta [Primeros pasos](getting-started) para saber qué puede prepararse hoy y
+[Activación Enterprise](enterprise-activation) para conocer los gates que deben
+existir antes de entregar un token. El [catálogo de proyectos de integración](integrations/projects)
+enlaza los repositorios públicos y documenta la frontera de cada módulo.

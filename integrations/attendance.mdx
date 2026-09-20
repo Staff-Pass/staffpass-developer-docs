@@ -1,0 +1,31 @@
+---
+title: "Asistencia y ZKTeco"
+description: "Alcance del simulador y gate de homologación física."
+---
+
+## Disponible localmente
+
+StaffPass tiene un puerto de origen de asistencia y un simulador sintético. La
+lógica local cubre mapeos versionados, timestamps con offset, cursor, overlap,
+deduplicación, cuarentena, checkpoint y reanudación segura. Los eventos solo se
+traducen a `CHECK_IN`, `LUNCH_OUT`, `LUNCH_IN` y `CHECK_OUT`.
+
+El simulador no abre sockets, URLs ni SDKs de un reloj. No recibe biometría,
+fotografías ni credenciales reales y nunca crea empleados automáticamente.
+
+## Pendiente de validación
+
+No se ha validado una combinación concreta de fabricante, modelo, firmware,
+protocolo y transporte. Para declarar compatibilidad hacen falta:
+
+1. documentación oficial versionada y licencia aplicable;
+2. equipo de laboratorio identificado;
+3. credenciales de prueba gestionadas fuera de la documentación;
+4. capturas atribuibles de desconexión, replay, cursor, reloj incorrecto y
+   aislamiento entre tenants;
+5. reconciliación completa entre log de origen, recibidos, aplicados y
+   cuarentenados;
+6. revisor independiente.
+
+Hasta entonces el estado es `BLOCKED_EXTERNAL_EVIDENCE`. No hay endpoint de
+cliente ni compatibilidad comercial de ZKTeco publicada.

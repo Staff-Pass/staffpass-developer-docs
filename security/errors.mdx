@@ -1,0 +1,41 @@
+---
+title: "Errores"
+description: "Cómo interpretar errores sin inferir éxito ni reintentar a ciegas."
+---
+
+## Forma actual del backend
+
+Los errores HTTP controlados conservan el cuerpo definido por la aplicación,
+normalmente con `code` y `message`. Una falla inesperada se reduce a una respuesta
+genérica para no filtrar detalles internos:
+
+```json
+{
+  "statusCode": 500,
+  "code": "INTERNAL_ERROR",
+  "message": "Unexpected server error"
+}
+```
+
+La futura API Enterprise deberá normalizar este contrato en su OpenAPI antes de
+publicar operaciones. Mientras `paths` esté vacío, ningún código de una ruta
+administrativa debe considerarse parte del contrato externo.
+
+## Semántica segura
+
+| Clase | Acción del cliente |
+| --- | --- |
+| `400` | Corrige la solicitud; no repitas el mismo payload automáticamente. |
+| `401` | Detén la llamada y revisa la credencial; no sustituyas el token por una sesión Firebase. |
+| `403` | Verifica plan, activación, tenant y scope; no intentes otro tenant. |
+| `404` | No infieras que el recurso existe en otro tenant. |
+| `409` | Concilia estado e idempotencia antes de crear otro comando. |
+| `429` | Respeta la política publicada y `Retry-After` cuando exista. |
+| `5xx` o timeout | Resultado potencialmente desconocido; consulta estado antes de reintentar una mutación. |
+
+## Operaciones sensibles
+
+Para pagos, bancos, SIPE, DGI, Odoo, asistencia o cualquier proveedor externo,
+un timeout no demuestra fracaso. Conserva la clave idempotente y la evidencia,
+reconcilia con la fuente de verdad y evita una segunda operación hasta resolver
+el resultado.

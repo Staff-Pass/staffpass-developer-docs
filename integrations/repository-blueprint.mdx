@@ -1,0 +1,74 @@
+---
+title: "Plantilla de repositorios"
+description: "Estructura, marca y controles comunes para cada proyecto de integración."
+---
+
+Cada proyecto debe parecer parte de StaffPass sin duplicar código de aplicación.
+
+```text
+staffpass-integration-<proveedor>/
+├── .github/
+│   ├── CODEOWNERS
+│   ├── dependabot.yml
+│   └── workflows/ci.yml
+├── assets/brand/
+│   ├── staffpass-icon-dark.svg
+│   ├── staffpass-icon-light.svg
+│   ├── staffpass-logo-horizontal-dark.svg
+│   └── staffpass-logo-horizontal-light.svg
+├── docs/
+│   ├── architecture.md
+│   ├── configuration.md
+│   ├── security.md
+│   ├── status.md
+│   └── validation.md
+├── src/
+├── test/
+├── CHANGELOG.md
+├── README.md
+├── SECURITY.md
+└── package.json
+```
+
+## Marca
+
+- Primario: `#008FFE`
+- Primario oscuro: `#0052A3`
+- Primario claro: `#47AFFA`
+- Fondo claro: `#F4F8FF`
+- Noche: `#071827`
+- Los SVG canónicos provienen del panel StaffPass y deben conservar proporción,
+  contraste y variante clara/oscura.
+
+El README debe incluir el logo, estado de disponibilidad, alcance, diagrama de
+flujo, ejemplo no secreto, matriz de soporte y enlace al portal público.
+
+## Contrato mínimo de documentación
+
+Cada repositorio debe declarar por separado:
+
+1. qué código existe y qué pruebas pasaron;
+2. qué proveedor, versión o dispositivo fue validado externamente;
+3. qué está habilitado en staging o producción;
+4. qué datos procesa y cómo se aísla el tenant;
+5. cómo maneja idempotencia, timeout, `UNKNOWN`, rotación y revocación;
+6. cómo reportar una vulnerabilidad sin abrir un issue público con secretos.
+
+## Versionado y releases
+
+- SemVer para contratos y adaptadores.
+- Tags firmados o protegidos después de CI.
+- Changelog con cambios de contrato y evidencia de proveedor.
+- Ningún release `1.0.0` mientras el proveedor siga `BLOCKED_EXTERNAL_EVIDENCE`.
+- Los repositorios públicos no deben incluir código propietario sin licencia
+  explícita; la ausencia actual de archivos `LICENSE` obliga a resolver licencia
+  y visibilidad antes de crear proyectos públicos.
+
+## CI mínimo
+
+- formato, lint, typecheck y pruebas focales;
+- audit de dependencias de producción;
+- escaneo de secretos;
+- fixtures exclusivamente sintéticos y anonimizados;
+- verificación de enlaces/documentación;
+- prueba que impida habilitar transporte real sin configuración explícita.

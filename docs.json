@@ -1,0 +1,67 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "StaffPass Developers",
+  "description": "Integraciones y API Enterprise de StaffPass",
+  "logo": {
+    "light": "/assets/brand/staffpass-icon-dark.svg",
+    "dark": "/assets/brand/staffpass-icon-light.svg"
+  },
+  "favicon": "/assets/brand/staffpass-icon-dark.svg",
+  "colors": {
+    "primary": "#008FFE",
+    "light": "#47AFFA",
+    "dark": "#0052A3"
+  },
+  "appearance": {
+    "default": "system"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Primeros pasos",
+        "pages": [
+          "index",
+          "getting-started",
+          "enterprise-activation"
+        ]
+      },
+      {
+        "group": "Seguridad",
+        "pages": [
+          "security/authentication",
+          "security/permissions",
+          "security/errors",
+          "security/rate-limits"
+        ]
+      },
+      {
+        "group": "Integraciones",
+        "pages": [
+          "integrations/status",
+          "integrations/projects",
+          "integrations/repository-blueprint",
+          "integrations/attendance",
+          "integrations/accounting",
+          "integrations/payroll"
+        ]
+      },
+      {
+        "group": "Referencia API",
+        "pages": [
+          "api-reference/overview",
+          "api-reference/examples"
+        ]
+      },
+      {
+        "group": "Mantenimiento",
+        "pages": [
+          "maintenance/versioning",
+          "maintenance/information-architecture",
+          "maintenance/hosting-evaluation",
+          "maintenance/release-checklist"
+        ]
+      }
+    ]
+  }
+}

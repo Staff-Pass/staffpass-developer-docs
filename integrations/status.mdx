@@ -1,0 +1,31 @@
+---
+title: "Estado de integraciones"
+description: "Matriz verificable de implementación local y aceptación externa."
+---
+
+Fecha de revisión del repositorio: 20 de septiembre de 2026.
+
+| Integración | Evidencia local | Evidencia externa / producción | Disponibilidad por API Enterprise |
+| --- | --- | --- | --- |
+| Contabilidad / Odoo | `IMPLEMENTED_LOCAL` | Bloqueada: faltan instancia, edición, hosting, plan de cuentas, autenticación y sandbox atribuible | No disponible |
+| SIPE | `IMPLEMENTED_LOCAL` | Bloqueada: faltan piloto, workbook vigente, reglas, calendario y aceptación del portal | No disponible |
+| DGI / Planilla 03 | `IMPLEMENTED_LOCAL` | Bloqueada: faltan plantilla/mapeo vigente y aceptación contable/fiscal | No disponible |
+| ACH Banco General | `IMPLEMENTED_LOCAL` | Bloqueada: falta producto, layout, muestra, aprobador y validación bancaria | No disponible |
+| ACH Banistmo | `IMPLEMENTED_LOCAL` | Bloqueada: falta producto, layout, muestra, aprobador y validación bancaria | No disponible |
+| ACH BAC Panamá | `IMPLEMENTED_LOCAL` | Bloqueada: falta producto, layout, muestra, aprobador y validación bancaria | No disponible |
+| Asistencia ZKTeco | `IMPLEMENTED_WITH_SIMULATOR` | Bloqueada: no hay reloj, firmware, protocolo ni laboratorio validado | No disponible |
+| Alertas / FCM | `IMPLEMENTED_LOCAL` | Bloqueada para piloto: faltan tolerancias, excepciones y receptores aprobados | No disponible |
+| Proyección ISR | `IMPLEMENTED_LOCAL` | Falta aceptación contable/legal | No disponible |
+
+## Cómo leer la matriz
+
+- `IMPLEMENTED_LOCAL` significa que existen código, persistencia o pruebas
+  locales revisables. No significa que un proveedor aceptó el resultado.
+- `IMPLEMENTED_WITH_SIMULATOR` significa que la lógica fue ejercitada con una
+  fuente sintética sin hardware.
+- `No disponible` significa que no existe una operación externa documentada,
+  aunque haya una pantalla o ruta administrativa interna.
+
+La publicación futura de una operación exige actualizar esta matriz, agregarla
+al OpenAPI, implementar los gates Enterprise y adjuntar evidencia separada de
+local, CI, staging, proveedor/dispositivo y producción.

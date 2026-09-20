@@ -1,0 +1,58 @@
+---
+title: "Evaluación de hosting"
+description: "Mintlify Starter como inicio y Scalar abierto como alternativa privada."
+---
+
+Fecha de verificación: 20 de septiembre de 2026.
+
+## Mintlify Starter
+
+La [página oficial de precios](https://www.mintlify.com/pricing) muestra Starter
+a USD 0/mes, sin tarjeta, con cinco editores, dominio personalizado, Git sync,
+autenticación y API playground. La [guía oficial de autenticación](https://www.mintlify.com/docs/authentication-personalization/authentication-setup)
+admite JWT, OAuth 2.0, dashboard de Mintlify o contraseña.
+
+Esto hace de Starter una opción inicial razonable para un portal público o para
+una primera capa privada. Sin embargo, vincular acceso automáticamente al plan
+Enterprise de StaffPass no es automático: StaffPass tendría que implementar un
+login/handshake que valide el tenant y firme la sesión de documentación. Ese
+puente no existe hoy.
+
+La decisión vigente es publicar las guías generales. La referencia seguirá sin
+operaciones ejecutables mientras no exista el gateway Enterprise. Publicar las
+guías no autoriza GitHub App, DNS ni despliegue; esos pasos siguen separados.
+
+## Hallazgo de la CLI
+
+La validación local se ejecutó con `mint` 4.2.909, la versión `latest` consultada
+en npm. El build y el OpenAPI pasaron, pero el árbol temporal de la CLI reportó
+15 vulnerabilidades altas y dos moderadas, además de dependencias deprecadas.
+La CLI no se agregó al backend ni a su lockfile.
+
+Hasta que el proveedor actualice ese árbol, no se debe instalar la CLI como
+dependencia persistente ni ejecutarla sobre documentación no confiable. El
+validador local sin dependencias (`validate.mjs`) cubre estructura, navegación y
+la prohibición de publicar rutas; la validación oficial puede correr en un
+entorno efímero y restringido cuando sea necesaria.
+
+## Scalar abierto
+
+La [referencia de Scalar](https://scalar.com/solutions/openapi-documentation) es
+MIT, se puede autoalojar o montar dentro de una aplicación y consume OpenAPI
+3.0/3.1. Para documentación privada ligada automáticamente al plan, es la opción
+más controlable sin pagar una licencia: el portal existente decide la sesión y
+solo entrega la referencia a tenants Enterprise con API activa.
+
+Scalar no elimina el trabajo del backend. Antes de integrarlo siguen siendo
+obligatorios `api_enabled`, tokens de integración, scopes, un OpenAPI real y el
+control de acceso del portal. Tampoco sustituye guías editoriales completas; su
+fortaleza es la referencia API embebida.
+
+## Recomendación
+
+- Para las guías públicas: iniciar con Mintlify Starter después de autorizar
+  publicación y aceptar el riesgo operativo de su CLI.
+- Si las guías y la referencia deben heredarse automáticamente del plan:
+  preferir Scalar dentro del portal de StaffPass o implementar y probar el
+  handshake JWT de Mintlify antes de publicar.
+- En ambos casos: mantener OpenAPI vacío hasta que exista el gateway Enterprise.
