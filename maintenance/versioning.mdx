@@ -5,36 +5,36 @@ description: "Política para mantener documentación, OpenAPI y runtime sincroni
 
 ## Fuente de verdad
 
-Cuando la API exista, OpenAPI debe generarse o validarse desde el contrato del
-gateway externo. La documentación manual explica flujos y decisiones; no puede
-añadir rutas, campos o estados ausentes del contrato.
+El contrato externo vigente es `api-reference/openapi.json`. La documentación explica flujos y decisiones, pero no puede añadir rutas, campos o estados ausentes del runtime y del OpenAPI.
+
+La versión principal se incluye en la ruta, actualmente `/integrations/v1`.
 
 ## Cambios compatibles
 
-Se consideran candidatos compatibles, sujetos a prueba:
+Se consideran compatibles, sujetos a prueba:
 
 - agregar una operación nueva;
 - agregar un campo de respuesta opcional;
 - agregar un código de error documentado sin cambiar el significado de éxito;
-- ampliar un enum solo cuando los clientes estén obligados a tolerar valores
-  desconocidos.
+- ampliar un enum cuando los clientes toleran valores desconocidos.
 
 ## Cambios incompatibles
 
-Requieren una nueva versión y una ventana de migración:
+Requieren una versión nueva y una ventana de migración:
 
 - eliminar o renombrar una operación o campo;
 - cambiar obligatoriedad, tipo o semántica;
-- cambiar idempotencia o estados terminales;
-- endurecer límites por debajo del contrato vigente;
+- cambiar el aislamiento de tenant;
+- reducir límites por debajo del contrato vigente;
 - reutilizar un código de error con otro significado.
 
-## Cadencia de revisión
+## Proceso de publicación
 
-En cada cambio de integración:
+En cada cambio:
 
-1. audita código, migraciones, guards y pruebas;
-2. actualiza OpenAPI y guías en el mismo cambio;
-3. ejecuta validación de enlaces y especificación;
-4. registra qué fue probado localmente y qué evidencia externa falta;
-5. publica solo con autorización y tras confirmar visibilidad pública o privada.
+1. auditar controladores externos, migraciones, guards y pruebas;
+2. actualizar OpenAPI y guías en el mismo cambio;
+3. validar navegación, rutas, servidor, seguridad y ausencia de rutas internas;
+4. desplegar el runtime antes de anunciar una operación;
+5. verificar salud, autenticación cerrada y contrato público;
+6. publicar Mintlify desde `main`.

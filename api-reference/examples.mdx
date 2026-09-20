@@ -1,37 +1,50 @@
 ---
 title: "Ejemplos"
-description: "Ejemplos seguros mientras la API Enterprise no está disponible."
+description: "Solicitudes seguras para consultar empleados."
 ---
 
-## Lista de preparación de un cliente
+## curl
 
-Este es el único ejemplo ejecutable recomendado en la fase actual: validar que
-el onboarding esté completo antes de escribir un cliente HTTP.
-
-```text
-[ ] Contrato Enterprise vigente
-[ ] Empresa exacta confirmada
-[ ] API activada explícitamente
-[ ] Token de integración emitido
-[ ] Base URL entregada por StaffPass
-[ ] OpenAPI contiene la operación requerida
-[ ] Scopes y límites documentados
-[ ] Sandbox o piloto autorizado
+```bash
+curl --request GET \
+  --url "https://api.staffpass.app/integrations/v1/employees?limit=25&active=true" \
+  --header "Authorization: Bearer $STAFFPASS_INTEGRATION_TOKEN"
 ```
 
-Si cualquier casilla está vacía, no intentes descubrir rutas ni reutilices una
-sesión Firebase.
+Para consultar un empleado:
 
-## Manejo de resultados inciertos
-
-```text
-1. Conserva request ID e idempotency key.
-2. No envíes una segunda mutación.
-3. Consulta el estado con una operación publicada, si existe.
-4. Si no existe, solicita conciliación a StaffPass.
-5. Reanuda solo con un resultado terminal inequívoco.
+```bash
+curl --request GET \
+  --url "https://api.staffpass.app/integrations/v1/employees/$EMPLOYEE_ID" \
+  --header "Authorization: Bearer $STAFFPASS_INTEGRATION_TOKEN"
 ```
 
-Los ejemplos `curl`, JavaScript y Python se agregarán desde el OpenAPI aprobado,
-no desde controladores internos. Esto evita ejemplos que funcionen localmente
-pero omitan plan, activación, tenant o scopes.
+## JavaScript
+
+```javascript
+const response = await fetch(
+  "https://api.staffpass.app/integrations/v1/employees?updatedAfter=2026-09-20T00:00:00Z",
+  {
+    headers: {
+      Authorization: `Bearer ${process.env.STAFFPASS_INTEGRATION_TOKEN}`,
+    },
+  },
+);
+
+if (!response.ok) {
+  throw new Error(`StaffPass respondió ${response.status}`);
+}
+
+const { data, page } = await response.json();
+```
+
+## Reglas de cliente
+
+- Guarda el token únicamente en un gestor de secretos.
+- Continúa la paginación con `page.nextCursor`.
+- Ante `401`, detén las llamadas y revisa activación o vigencia.
+- Ante `403 INTEGRATION_SCOPE_REQUIRED`, solicita el scope; no cambies de tenant.
+- Ante `429`, espera `retryAfterSeconds` antes de continuar.
+- No reintentes automáticamente una solicitud fallida de forma ilimitada.
+
+No existe una credencial pública de demostración. Los ejemplos requieren un token emitido para una empresa concreta.

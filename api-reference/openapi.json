@@ -2,20 +2,414 @@
   "openapi": "3.1.0",
   "info": {
     "title": "StaffPass Enterprise API",
-    "version": "0.0.0-unavailable",
-    "description": "No hay operaciones publicadas. La API Enterprise requiere plan Enterprise vigente, api_enabled explícito y un token de integración válido; esos controles todavía no están implementados.",
+    "version": "1.0.0",
+    "description": "API externa versionada para integraciones Enterprise. Requiere plan Enterprise vigente, api_enabled y un token de integración válido.",
     "contact": {
-      "name": "StaffPass"
+      "name": "StaffPass",
+      "url": "https://staffpass.app"
     }
   },
-  "paths": {},
+  "servers": [
+    {
+      "url": "https://api.staffpass.app",
+      "description": "Producción"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Employees",
+      "description": "Empleados del tenant autorizado"
+    }
+  ],
+  "paths": {
+    "/integrations/v1/employees": {
+      "get": {
+        "tags": [
+          "Employees"
+        ],
+        "summary": "Listar empleados",
+        "description": "Devuelve empleados no eliminados de la empresa ligada al token.",
+        "operationId": "listIntegrationEmployees",
+        "security": [
+          {
+            "integrationBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Cantidad máxima de resultados.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "UUID recibido en page.nextCursor.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "updatedAfter",
+            "in": "query",
+            "description": "Incluye registros actualizados después de esta fecha.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "active",
+            "in": "query",
+            "description": "Filtra por estado activo.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/integrations/v1/employees/{id}": {
+      "get": {
+        "tags": [
+          "Employees"
+        ],
+        "summary": "Consultar empleado",
+        "description": "Devuelve un empleado por UUID dentro de la empresa ligada al token.",
+        "operationId": "getIntegrationEmployee",
+        "security": [
+          {
+            "integrationBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "UUID del empleado.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empleado encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "integrationBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "StaffPass integration token",
+        "description": "Token sp_live o sp_test emitido para una sola empresa."
+      }
+    },
+    "schemas": {
+      "Employee": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "employeeCode",
+          "name",
+          "position",
+          "department",
+          "email",
+          "active",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "employeeCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "position": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "department": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "email"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Page": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "nextCursor",
+          "limit"
+        ],
+        "properties": {
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "EmployeeListResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data",
+          "page"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Employee"
+            }
+          },
+          "page": {
+            "$ref": "#/components/schemas/Page"
+          }
+        }
+      },
+      "EmployeeResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Employee"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "requiredScopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "retryAfterSeconds": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Parámetro inválido.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Token inválido, inactivo o empresa no habilitada.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "code": "INTEGRATION_TOKEN_INVALID",
+              "message": "Integration token is invalid or inactive"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Falta el scope requerido.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "code": "INTEGRATION_SCOPE_REQUIRED",
+              "message": "The integration token does not grant the required scope",
+              "requiredScopes": [
+                "employees:read"
+              ]
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Empleado no encontrado en el tenant.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "code": "EMPLOYEE_NOT_FOUND",
+              "message": "Employee not found"
+            }
+          }
+        }
+      },
+      "RateLimited": {
+        "description": "Cuota excedida.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "code": "INTEGRATION_RATE_LIMIT_EXCEEDED",
+              "message": "Integration rate limit exceeded",
+              "retryAfterSeconds": 60
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Error inesperado.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "code": "INTERNAL_ERROR",
+              "message": "Unexpected server error"
+            }
+          }
+        }
+      }
+    }
+  },
   "x-staffpass-availability": {
-    "status": "NOT_IMPLEMENTED",
-    "publicOperations": 0,
+    "status": "AVAILABLE_WITH_ENTERPRISE_ACTIVATION",
+    "publicOperations": 2,
     "requiredGates": [
       "ENTERPRISE_PLAN",
       "API_ENABLED",
       "VALID_INTEGRATION_TOKEN"
+    ],
+    "scopes": [
+      "employees:read"
     ]
   }
 }

@@ -1,45 +1,60 @@
 ---
 title: "Primeros pasos"
-description: "Prepara una futura integración sin depender de endpoints internos."
+description: "Conecta un sistema externo a la API Enterprise v1."
 ---
 
-## Antes de comenzar
+## Requisitos
 
-La API Enterprise todavía no es consumible. No uses una sesión Firebase del
-panel, un token de TimeClock, un token de descarga, una credencial de proveedor
-ni una referencia opaca a secretos como sustituto de un token de integración.
+Antes de llamar la API necesitas:
 
-Puedes avanzar hoy con estas tareas:
+1. una empresa con plan Enterprise vigente;
+2. `api_enabled = true`;
+3. un token de integración de producción con `employees:read`;
+4. la base URL `https://api.staffpass.app`.
 
-1. Define el caso de uso y el sistema que será fuente de verdad.
-2. Identifica la empresa de StaffPass que participará en el piloto.
-3. Clasifica los datos personales, laborales, bancarios o biométricos que
-   podrían intervenir.
-4. Define idempotencia, conciliación y manejo de resultados desconocidos.
-5. Reúne documentación oficial y vigente del proveedor, sin adjuntar secretos.
-6. Espera una especificación OpenAPI con operaciones antes de programar llamadas.
+StaffPass entrega el secreto del token una sola vez. No uses una sesión Firebase del panel, un token de TimeClock, un token de descarga ni credenciales de proveedor.
 
-## Criterio de disponibilidad
+## Primera solicitud
 
-Una integración se considera disponible solo cuando exista evidencia de todos
-estos controles:
+```bash
+curl --request GET \
+  --url "https://api.staffpass.app/integrations/v1/employees?limit=50&active=true" \
+  --header "Authorization: Bearer $STAFFPASS_INTEGRATION_TOKEN"
+```
 
-- el cliente tiene plan Enterprise vigente;
-- la empresa tiene `api_enabled = true` en una fuente autoritativa;
-- se emitió un token de integración con alcance, expiración y revocación;
-- el gateway valida los tres gates en cada solicitud;
-- la operación aparece en la especificación OpenAPI publicada;
-- existen límites, errores y política de versión definidos para esa operación.
+Una credencial válida devuelve una colección paginada:
 
-Hoy esos controles no están implementados en el backend. Una demostración local,
-una pantalla administrativa o una respuesta de una ruta interna no los sustituye.
+```json
+{
+  "data": [
+    {
+      "id": "65f43bb2-7282-4bb7-b399-6db91a7c431f",
+      "employeeCode": "EMP-001",
+      "name": "Ana Pérez",
+      "position": "Analista",
+      "department": "Finanzas",
+      "email": "ana@example.com",
+      "active": true,
+      "createdAt": "2026-09-01T14:30:00.000Z",
+      "updatedAt": "2026-09-20T18:45:00.000Z"
+    }
+  ],
+  "page": {
+    "nextCursor": null,
+    "limit": 50
+  }
+}
+```
 
-## No programes contra rutas internas
+## Paginación y filtros
 
-Los controladores actuales están diseñados para el panel, la aplicación móvil,
-TimeClock, tareas internas o herramientas públicas específicas. Sus contratos
-pueden cambiar sin la política de compatibilidad de la futura API Enterprise.
+- `limit`: de 1 a 100; valor predeterminado 50.
+- `cursor`: UUID devuelto en `page.nextCursor`.
+- `updatedAfter`: fecha y hora ISO 8601; devuelve cambios posteriores.
+- `active`: `true` o `false`.
 
-Cuando la API se habilite, el equipo de StaffPass entregará una base URL, un
-token de integración y una versión OpenAPI compatibles entre sí. Si falta uno
-de esos elementos, detén la integración y solicita confirmación.
+Sigue `nextCursor` hasta que sea `null`. Los datos bancarios, biométricos, documentos y demás campos sensibles no forman parte de esta respuesta.
+
+## Comprobación segura
+
+Una llamada sin token devuelve `401 INTEGRATION_TOKEN_INVALID`. Esto confirma que la ruta existe, pero no concede acceso. Solicita la activación y el token a StaffPass; no intentes descubrir rutas internas.

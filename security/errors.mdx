@@ -1,40 +1,32 @@
 ---
 title: "Errores"
-description: "Cómo interpretar errores sin inferir éxito ni reintentar a ciegas."
+description: "Códigos estables de la API Enterprise v1."
 ---
 
-## Forma actual del backend
+## Forma de error
 
-Los errores HTTP controlados conservan el cuerpo definido por la aplicación,
-normalmente con `code` y `message`. Una falla inesperada se reduce a una respuesta
-genérica para no filtrar detalles internos:
+Los errores controlados usan `code` y `message`:
 
 ```json
 {
-  "statusCode": 500,
-  "code": "INTERNAL_ERROR",
-  "message": "Unexpected server error"
+  "code": "INTEGRATION_TOKEN_INVALID",
+  "message": "Integration token is invalid or inactive"
 }
 ```
 
-La futura API Enterprise deberá normalizar este contrato en su OpenAPI antes de
-publicar operaciones. Mientras `paths` esté vacío, ningún código de una ruta
-administrativa debe considerarse parte del contrato externo.
+## Códigos publicados
 
-## Semántica segura
+| HTTP | Código | Acción |
+| --- | --- | --- |
+| `400` | Validación de parámetros | Corrige UUID, fechas, booleanos o límites. |
+| `401` | `INTEGRATION_TOKEN_INVALID` | Detén llamadas y revisa token, plan, licencia y activación. |
+| `403` | `INTEGRATION_SCOPE_REQUIRED` | Solicita `employees:read`; no pruebes otro tenant. |
+| `404` | `EMPLOYEE_NOT_FOUND` | El recurso no existe dentro del tenant autorizado. |
+| `429` | `INTEGRATION_RATE_LIMIT_EXCEEDED` | Espera `retryAfterSeconds`. |
+| `500` | `INTERNAL_ERROR` | Conserva la evidencia y aplica backoff antes de reintentar una lectura. |
 
-| Clase | Acción del cliente |
-| --- | --- |
-| `400` | Corrige la solicitud; no repitas el mismo payload automáticamente. |
-| `401` | Detén la llamada y revisa la credencial; no sustituyas el token por una sesión Firebase. |
-| `403` | Verifica plan, activación, tenant y scope; no intentes otro tenant. |
-| `404` | No infieras que el recurso existe en otro tenant. |
-| `409` | Concilia estado e idempotencia antes de crear otro comando. |
-| `429` | Respeta la política publicada y `Retry-After` cuando exista. |
-| `5xx` o timeout | Resultado potencialmente desconocido; consulta estado antes de reintentar una mutación. |
+Un `404` no confirma que el UUID exista en otra empresa. Un `401` deliberadamente no revela qué gate falló.
 
-## Operaciones sensibles
+## Request IDs y auditoría
 
-Para cualquier mutación sensible en un sistema externo, un timeout no demuestra
-fracaso. Conserva la clave idempotente y la evidencia, reconcilia con la fuente
-de verdad y evita una segunda operación hasta resolver el resultado.
+Cada solicitud autenticada recibe una identidad interna de request y genera auditoría por token, empresa, método, ruta, estado y duración. El secreto y los datos personales innecesarios no se copian al registro.

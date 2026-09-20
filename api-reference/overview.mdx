@@ -1,37 +1,33 @@
 ---
 title: "Referencia OpenAPI"
-description: "Especificación deliberadamente vacía mientras no exista una API externa segura."
+description: "Contrato público de la API Enterprise v1."
 ---
 
-La especificación local está en [`openapi.json`](./openapi.json) y usa OpenAPI
-3.1.0. Su objeto `paths` está vacío de forma intencional.
+La especificación pública está en [`openapi.json`](./openapi.json), usa OpenAPI 3.1.0 y apunta a:
 
-```json
-{
-  "openapi": "3.1.0",
-  "info": {
-    "title": "StaffPass Enterprise API",
-    "version": "0.0.0-unavailable"
-  },
-  "paths": {}
-}
+```text
+https://api.staffpass.app
 ```
 
-No se importaron controladores internos al documento. Hacerlo expondría rutas
-que dependen de Firebase, permisos del panel o credenciales de dispositivo, sin
-los gates Enterprise requeridos.
+## Operaciones disponibles
 
-## Condición para agregar una operación
+| Método | Ruta | Scope |
+| --- | --- | --- |
+| `GET` | `/integrations/v1/employees` | `employees:read` |
+| `GET` | `/integrations/v1/employees/{id}` | `employees:read` |
 
-Una operación solo puede aparecer aquí cuando:
+La lista admite `limit`, `cursor`, `updatedAfter` y `active`. La consulta por identificador exige un UUID y devuelve `404 EMPLOYEE_NOT_FOUND` cuando el empleado no existe dentro del tenant de la credencial.
 
-1. existe un controlador externo dedicado;
-2. valida plan Enterprise, `api_enabled`, token, tenant y scope;
-3. tiene DTOs y respuestas versionadas;
-4. define idempotencia, paginación, límites y códigos de error;
-5. cuenta con pruebas de autenticación y aislamiento entre tenants;
-6. fue aprobada para publicación.
+## Autenticación
 
-El portal no configura un servidor ni un playground mientras no haya una base
-URL externa autorizada. Así se evita que la documentación invite a ejecutar
-rutas internas por accidente.
+Envía el token dedicado en el encabezado:
+
+```http
+Authorization: Bearer sp_live.<public_id>.<secret>
+```
+
+Los tokens de prueba usan el prefijo `sp_test` y no son válidos como credenciales de producción. No uses tokens Firebase ni envíes un `company_id`: el backend resuelve la empresa desde la credencial.
+
+## Límites del contrato
+
+Esta versión es de solo lectura y publica exclusivamente empleados. Las rutas administrativas, TimeClock, nómina, bancos, DGI, SIPE, notificaciones y proveedores permanecen fuera del contrato externo.

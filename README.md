@@ -2,34 +2,24 @@
 
 [![Validate documentation](https://github.com/Staff-Pass/staffpass-developer-docs/actions/workflows/validate.yml/badge.svg)](https://github.com/Staff-Pass/staffpass-developer-docs/actions/workflows/validate.yml) · [StaffPass](https://staffpass.app/) · [Apache-2.0](LICENSE)
 
-Documentación pública para integradores que conectarán sistemas externos con la
-futura API Enterprise de StaffPass. El sitio está publicado en
-[staff-pass.mintlify.site](https://staff-pass.mintlify.site) y no contiene
-endpoints operativos mientras la API Enterprise siga sin estar disponible.
+Documentación pública para integradores que conectan sistemas externos con StaffPass. El sitio está publicado en [staff-pass.mintlify.site](https://staff-pass.mintlify.site) y su MCP público está disponible en [staff-pass.mintlify.site/mcp](https://staff-pass.mintlify.site/mcp).
 
-## Decisiones de seguridad
+## Estado
 
-- La API se describe como no disponible porque el backend no contiene plan
-  Enterprise, `api_enabled`, tokens de integración ni un guard para esos tokens.
-- Las sesiones Firebase del panel no se documentan como credenciales externas.
-- `api-reference/openapi.json` usa OpenAPI 3.1.0 con `paths: {}`.
-- Las rutas administrativas existentes no se copian al portal.
-- La visibilidad acordada para las guías es pública. La referencia ejecutable
-  seguirá ausente hasta implementar los gates Enterprise.
-- Mintlify despliega automáticamente la rama `main`; el MCP público se expone
-  en [staff-pass.mintlify.site/mcp](https://staff-pass.mintlify.site/mcp).
+- API Enterprise v1 disponible en `https://api.staffpass.app`.
+- Primer recurso público: empleados en modo de solo lectura.
+- Autenticación mediante tokens de integración dedicados; las sesiones Firebase del panel no son credenciales de integración.
+- Activación cerrada por defecto: plan Enterprise vigente, `api_enabled = true` y token válido con el scope `employees:read`.
+- Conector oficial gratuito para Odoo 19 y Odoo 18.
 
-## Validación local
+No se publican credenciales de prueba compartidas. StaffPass activa una empresa concreta y entrega el secreto del token una sola vez.
 
-Desde la raíz de este repositorio:
+## Validación
+
+La rama `main` se valida con GitHub Actions mediante:
 
 ```sh
 node validate.mjs
 ```
 
-La validación oficial se comprobó de forma efímera con `mint` 4.2.909 y Node
-24.20.0: `mintlify validate` y `openapi-check` pasaron. No se recomienda instalar
-esa CLI como dependencia persistente por ahora: el audit de su árbol temporal
-reportó 15 vulnerabilidades altas, dos moderadas y dependencias deprecadas. La
-CLI no se agregó a este repositorio ni a su lockfile. Revisar un preview tampoco
-autoriza publicación, DNS ni conexión del repositorio con Mintlify.
+El contrato público está en `api-reference/openapi.json`. Las rutas administrativas, móviles, de dispositivos y de proveedores quedan fuera del OpenAPI externo.

@@ -1,35 +1,33 @@
 ---
 title: "Límites de uso"
-description: "Estado actual de rate limiting y requisitos antes de publicar cuotas."
+description: "Cuotas iniciales de la API Enterprise v1."
 ---
 
-## API Enterprise
+## Límites vigentes
 
-No existe todavía una cuota contractual para la API Enterprise. El portal no
-publica números provisionales porque el gateway, la unidad de medición y el
-almacenamiento compartido de contadores no están implementados.
+La API aplica una ventana persistente de 60 segundos:
 
-## Backend actual
+| Dimensión | Límite |
+| --- | --- |
+| Por token | 60 solicitudes por minuto |
+| Por empresa | 300 solicitudes por minuto |
 
-El backend tiene un límite global configurable con valor local por defecto de
-120 solicitudes por 60 segundos. Sus contadores viven en memoria por proceso;
-en un despliegue con varias réplicas ese número no representa una cuota global
-exacta. También existen presupuestos separados para autenticación de dispositivos
-y herramientas públicas.
+Ambos límites deben permitir la solicitud. Los contadores se almacenan en base de datos, por lo que se comparten entre réplicas del servicio.
 
-<Warning>
-Estos valores protegen el runtime actual, pero no son un SLA ni una cuota de la
-API Enterprise. No diseñes capacidad de cliente alrededor de ellos.
-</Warning>
+## Respuesta 429
 
-## Qué debe publicarse antes de activar la API
+Cuando se excede una cuota:
 
-- límite por token y, si aplica, por tenant;
-- ventana y algoritmo de medición;
-- encabezados de cuota y `Retry-After`;
-- comportamiento con varias réplicas;
-- límites de payload, paginación y concurrencia;
-- política de ráfagas y solicitudes de aumento.
+```json
+{
+  "code": "INTEGRATION_RATE_LIMIT_EXCEEDED",
+  "message": "Integration rate limit exceeded",
+  "retryAfterSeconds": 60
+}
+```
 
-Hasta entonces, la única conducta válida ante `429` es detener la ráfaga y
-esperar instrucciones del contrato publicado.
+Detén la ráfaga y espera al menos `retryAfterSeconds`. Usa paginación de hasta 100 empleados por solicitud y sincronización incremental con `updatedAfter` para reducir tráfico.
+
+<Note>
+Estos son límites técnicos iniciales, no una garantía de capacidad ni un SLA. Una ampliación debe acordarse antes de diseñar cargas sostenidas por encima de ellos.
+</Note>

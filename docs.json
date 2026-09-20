@@ -37,9 +37,12 @@
       },
       {
         "group": "Referencia API",
+        "openapi": "api-reference/openapi.json",
         "pages": [
           "api-reference/overview",
-          "api-reference/examples"
+          "api-reference/examples",
+          "GET /integrations/v1/employees",
+          "GET /integrations/v1/employees/{id}"
         ]
       },
       {

@@ -1,39 +1,44 @@
 ---
 title: "Autenticación"
-description: "Diferencia entre sesiones de producto y futuros tokens de integración."
+description: "Tokens dedicados para la API Enterprise."
 ---
 
-## API Enterprise
+## Encabezado
 
-La API Enterprise requerirá un token de integración emitido para una empresa
-con API activa. El formato, prefijo, encabezado, expiración y scopes aún no están
-implementados; por tanto no se documenta una sintaxis provisional.
+Todas las operaciones Enterprise requieren:
+
+```http
+Authorization: Bearer <integration-token>
+```
+
+Los tokens de producción tienen el formato `sp_live.<public_id>.<secret>`; los de prueba usan `sp_test`. El secreto se entrega una sola vez y el backend almacena únicamente un hash no reversible.
 
 <Warning>
-No envíes un Firebase ID token del panel como credencial de integración. Tampoco
-uses credenciales de dispositivo, tokens de descarga, claves de proveedor ni
-referencias a secretos. Son dominios de autenticación distintos.
+No envíes un Firebase ID token del panel como credencial de integración. Tampoco uses credenciales de dispositivo, tokens de descarga, claves de proveedor ni referencias a secretos.
 </Warning>
 
-## Qué existe hoy
+## Validación por solicitud
 
-El backend administrativo extrae un bearer token Firebase, verifica revocación,
-busca el perfil administrativo y deriva el tenant, los módulos y permisos. Las
-rutas de autoservicio verifican además el vínculo con el empleado. TimeClock y
-el scheduler tienen mecanismos propios. Ninguno de ellos implementa el contrato
-de token Enterprise.
+El guard dedicado comprueba:
 
-## Requisitos para la implementación futura
+- sintaxis y ambiente del token;
+- hash mediante comparación segura;
+- expiración y revocación;
+- plan `ENTERPRISE` y licencia vigente;
+- `api_enabled = true`;
+- scopes requeridos por la operación.
 
-El mecanismo de integración deberá:
+La empresa se deriva del token. Un header, query parameter o cuerpo enviado por el cliente nunca puede cambiar el tenant.
 
-- almacenar solo un hash o identificador no reversible del secreto;
-- ligar cada token a un tenant único;
-- exigir `Enterprise` y `api_enabled` en cada solicitud;
-- tener scopes explícitos, expiración, revocación y rotación;
-- registrar uso sin copiar el token a logs;
-- usar comparación segura y fallar cerrado ante estado ausente;
-- mantener separados los tokens de sandbox y producción.
+## Respuesta de autenticación
 
-La documentación se actualizará con ejemplos ejecutables únicamente después de
-que esos controles existan y estén cubiertos por pruebas.
+Una credencial ausente, mal formada, vencida, revocada o perteneciente a una empresa no habilitada recibe:
+
+```json
+{
+  "code": "INTEGRATION_TOKEN_INVALID",
+  "message": "Integration token is invalid or inactive"
+}
+```
+
+StaffPass no distingue públicamente cuál gate falló, lo que reduce la enumeración de cuentas y tokens.

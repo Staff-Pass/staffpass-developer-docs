@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const failures = [];
+const generatedOperation = /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS) \/\S+$/;
 
 function collectPages(value, pages = []) {
   if (Array.isArray(value)) {
@@ -14,8 +15,8 @@ function collectPages(value, pages = []) {
   for (const [key, item] of Object.entries(value)) {
     if (key === 'pages' && Array.isArray(item)) {
       for (const page of item) {
-        if (typeof page === 'string') pages.push(page);
-        else collectPages(page, pages);
+        if (typeof page === 'string' && !generatedOperation.test(page)) pages.push(page);
+        else if (typeof page !== 'string') collectPages(page, pages);
       }
     } else {
       collectPages(item, pages);
@@ -47,51 +48,48 @@ for (const page of pages) {
   }
 }
 
-const openapiPath = join(root, 'api-reference/openapi.json');
-const openapi = JSON.parse(await readFile(openapiPath, 'utf8'));
-if (openapi.openapi !== '3.1.0') {
-  failures.push('openapi.json: se esperaba OpenAPI 3.1.0');
+const openapi = JSON.parse(await readFile(join(root, 'api-reference/openapi.json'), 'utf8'));
+if (openapi.openapi !== '3.1.0') failures.push('openapi.json: se esperaba OpenAPI 3.1.0');
+
+const expectedRoutes = [
+  '/integrations/v1/employees',
+  '/integrations/v1/employees/{id}',
+];
+const actualRoutes = Object.keys(openapi.paths || {}).sort();
+if (JSON.stringify(actualRoutes) !== JSON.stringify([...expectedRoutes].sort())) {
+  failures.push('openapi.json: las rutas públicas no coinciden con el contrato Enterprise v1');
 }
-if (!openapi.paths || Object.keys(openapi.paths).length !== 0) {
-  failures.push('openapi.json: no se permiten operaciones hasta implementar los gates Enterprise');
+for (const route of expectedRoutes) {
+  const operation = openapi.paths?.[route]?.get;
+  if (!operation) failures.push(`openapi.json: falta GET ${route}`);
+  if (!operation?.security?.some((item) => 'integrationBearer' in item)) {
+    failures.push(`openapi.json: falta seguridad bearer en GET ${route}`);
+  }
 }
-if (Array.isArray(openapi.servers) && openapi.servers.length > 0) {
-  failures.push('openapi.json: no se permite un servidor mientras la API no esté disponible');
+if (openapi.servers?.[0]?.url !== 'https://api.staffpass.app') {
+  failures.push('openapi.json: base URL pública incorrecta');
+}
+const bearer = openapi.components?.securitySchemes?.integrationBearer;
+if (bearer?.type !== 'http' || bearer?.scheme !== 'bearer') {
+  failures.push('openapi.json: esquema bearer ausente');
+}
+if (openapi['x-staffpass-availability']?.publicOperations !== 2) {
+  failures.push('openapi.json: conteo de operaciones públicas incorrecto');
 }
 
-const corpus = await Promise.all(
-  pages.map((page) => readFile(join(root, `${page}.mdx`), 'utf8')),
-);
-const requiredStatements = [
-  'Enterprise',
-  'api_enabled',
-  'token de integración',
-  'Firebase',
-  'No disponible',
-];
+const corpus = await Promise.all(pages.map((page) => readFile(join(root, `${page}.mdx`), 'utf8')));
 const text = corpus.join('\n');
-for (const statement of requiredStatements) {
-  if (!text.includes(statement)) {
-    failures.push(`contenido: falta la declaración obligatoria ${statement}`);
-  }
+for (const statement of ['Enterprise', 'api_enabled', 'token de integración', 'Firebase', 'employees:read', 'api.staffpass.app']) {
+  if (!text.includes(statement)) failures.push(`contenido: falta la declaración obligatoria ${statement}`);
 }
 
-const forbiddenInternalRoutes = [
-  '/attendance-integrations',
-  '/payroll/sipe',
-  '/payroll/dgi',
-  '/payroll/bank',
-  '/internal/notifications',
-];
-for (const route of forbiddenInternalRoutes) {
-  if (JSON.stringify(openapi.paths).includes(route)) {
-    failures.push(`openapi.json: ruta interna expuesta ${route}`);
-  }
+for (const route of ['/attendance-integrations','/payroll/sipe','/payroll/dgi','/payroll/bank','/internal/notifications']) {
+  if (JSON.stringify(openapi.paths).includes(route)) failures.push(`openapi.json: ruta interna expuesta ${route}`);
 }
 
-if (failures.length > 0) {
+if (failures.length) {
   console.error(failures.map((item) => `- ${item}`).join('\n'));
   process.exitCode = 1;
 } else {
-  console.log(`Portal válido: ${pages.length} páginas y 0 operaciones públicas.`);
+  console.log(`Portal válido: ${pages.length} páginas y ${actualRoutes.length} operaciones públicas.`);
 }

@@ -1,83 +1,50 @@
 ---
 title: "Activación Enterprise"
-description: "Gates comerciales y técnicos requeridos para habilitar la API."
+description: "Cómo habilitar de forma segura la API para una empresa."
 ---
 
-## Requisitos obligatorios
+## Gates obligatorios
 
-La activación futura será cerrada por defecto. Una empresa deberá cumplir las
-tres condiciones siguientes:
+La API está implementada y permanece cerrada por defecto. Una empresa debe cumplir los tres gates en cada solicitud:
 
-| Gate | Evidencia esperada | Estado actual |
-| --- | --- | --- |
-| Plan Enterprise | Contrato y vigencia asociados a la empresa | Política definida; control técnico no implementado |
-| API activa | `api_enabled` autoritativo y auditable | No existe en el esquema actual |
-| Token válido | Hash, scopes, expiración, revocación y último uso | No existe un modelo de token de integración |
+| Gate | Control |
+| --- | --- |
+| Plan Enterprise | El plan de la empresa es `ENTERPRISE` y su licencia no ha vencido. |
+| API activa | `api_enabled = true` en la empresa. |
+| Token válido | Credencial vigente, no revocada, del ambiente correcto y con el scope requerido. |
 
-## Flujo previsto de activación
+Si falla cualquiera, la solicitud no recibe datos.
 
-1. StaffPass confirma el plan Enterprise y la empresa exacta.
-2. Se revisan finalidad, datos, retención y responsables del cliente.
+## Flujo de activación
+
+1. StaffPass confirma la empresa exacta y el plan Enterprise.
+2. Se revisan finalidad, responsables y datos que consumirá la integración.
 3. Un operador autorizado activa la API para ese tenant.
-4. StaffPass emite un token una sola vez y almacena únicamente una
-   representación no reversible.
-5. El cliente prueba exclusivamente operaciones incluidas en su OpenAPI vigente.
-6. Se registra aceptación del piloto antes de usar datos o proveedores reales.
+4. StaffPass emite un token con nombre, ambiente, scopes y expiración.
+5. El secreto se muestra una sola vez; el backend conserva únicamente su hash y sufijo identificador.
+6. El cliente prueba las operaciones publicadas y conserva el token en un gestor de secretos.
 
-<Warning>
-Este flujo describe gates obligatorios del producto, no una funcionalidad ya
-implementada. No se debe prometer una fecha, token o endpoint hasta que el
-backend y sus pruebas implementen el control completo.
-</Warning>
+No hay credenciales de prueba públicas. La activación se realiza para un tenant seleccionado; publicar la API no activa automáticamente a ningún cliente.
 
-## Qué debe implementarse para abrir la API
+## Controles implementados
 
-Eliminar el aviso sin implementar estos controles solo expondría rutas internas.
-La API puede declararse disponible cuando se complete este orden de trabajo:
+- guard dedicado, separado de Firebase;
+- tenant derivado exclusivamente de la credencial;
+- scope inicial `employees:read`;
+- expiración, revocación, ambiente y último uso;
+- auditoría de solicitudes sin registrar el secreto;
+- límites persistentes por token y empresa;
+- controladores externos versionados bajo `/integrations/v1`;
+- respuestas de empleados que excluyen datos sensibles.
 
-1. **Entitlement por empresa.** Agregar al esquema una fuente autoritativa para
-   el plan vigente y `api_enabled`, cerrada por defecto y con auditoría de cada
-   cambio.
-2. **Credenciales de integración.** Crear un modelo ligado a una sola empresa
-   con identificador público, hash del secreto, scopes, expiración, revocación,
-   último uso y ambiente. El secreto se muestra una sola vez y nunca se guarda
-   ni registra en texto claro.
-3. **Autenticación dedicada.** Implementar un guard distinto de Firebase que
-   valide el token, resuelva el tenant desde la credencial y compruebe en cada
-   solicitud plan Enterprise, `api_enabled`, vigencia, revocación y scopes. El
-   cliente nunca debe elegir su `company_id` mediante un header.
-4. **API externa versionada.** Crear controladores y DTOs bajo una superficie
-   estable como `/integrations/v1`; no reutilizar directamente los controladores
-   del panel, TimeClock o tareas internas.
-5. **Protecciones operativas.** Aplicar rate limits por token y empresa,
-   idempotency keys en escrituras, request IDs, errores estables y auditoría sin
-   secretos ni datos personales innecesarios.
-6. **Contrato público.** Generar OpenAPI únicamente desde los controladores
-   externos y publicar base URL, scopes, ejemplos, límites y política de
-   versiones cuando exista al menos una operación aprobada.
-7. **Pruebas y piloto.** Cubrir tokens inválidos, vencidos y revocados;
-   aislamiento entre empresas; scopes; rate limits; idempotencia; y ausencia de
-   secretos en logs. Después, validar en staging y con una empresa piloto antes
-   de habilitar producción.
+## Rotación o incidente
 
-## Criterio para retirar el aviso
+Ante pérdida o exposición:
 
-El aviso puede retirarse y `openapi.json` puede publicar operaciones solo
-cuando una prueba automatizada demuestre todos los gates anteriores y exista
-una base URL externa desplegada. La primera entrega puede ser pequeña: un único
-recurso de solo lectura, un scope y un cliente piloto. La seguridad y el
-aislamiento multiempresa no pueden posponerse.
+1. detén nuevas solicitudes;
+2. solicita la revocación del token;
+3. conserva los request IDs y la evidencia necesaria;
+4. emite una credencial nueva en lugar de reactivar la anterior;
+5. actualiza el gestor de secretos y verifica con una lectura acotada.
 
-## Desactivación y compromiso
-
-Ante pérdida, exposición o resultado incierto:
-
-- detén nuevas solicitudes;
-- revoca el token afectado antes de emitir otro;
-- conserva identificadores e idempotency keys para conciliación;
-- no reintentes operaciones financieras o de proveedor cuyo resultado sea
-  desconocido;
-- revisa auditoría por tenant y alcance antes de reactivar.
-
-La desactivación debe conservar evidencia, snapshots y resultados desconocidos;
-no debe borrar el historial necesario para investigar.
+La revocación conserva la auditoría. Nunca envíes tokens por tickets, repositorios, capturas o logs.

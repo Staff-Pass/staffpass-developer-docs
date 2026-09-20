@@ -3,10 +3,7 @@ title: "Odoo"
 description: "Módulo oficial para importar asientos de nómina de StaffPass en Odoo."
 ---
 
-El conector oficial de Odoo es público en
-[Staff-Pass/staffpass-odoo-connector](https://github.com/Staff-Pass/staffpass-odoo-connector).
-Instálalo desde la rama que corresponda exactamente a la versión principal de
-tu servidor.
+El conector oficial de Odoo es público en [Staff-Pass/staffpass-odoo-connector](https://github.com/Staff-Pass/staffpass-odoo-connector). Instálalo desde la rama que corresponda exactamente a la versión principal de tu servidor.
 
 ## Disponible en Odoo Apps
 
@@ -18,10 +15,7 @@ tu servidor.
 | 19.0 | `19.0` | `19.0.1.0.0` | JSON-2 autenticado |
 | 18.0 | `18.0` | `18.0.1.0.0` | RPC externo autenticado |
 
-Ambas ramas pasaron una instalación limpia contra la imagen oficial de Odoo y
-pruebas transaccionales de importación, idempotencia, rechazo de conflictos,
-validación contable y reversión. Esta evidencia valida el código del módulo; no
-sustituye la aceptación del entorno específico de cada cliente.
+Ambas ramas pasaron una instalación limpia contra la imagen oficial de Odoo y pruebas transaccionales de importación, idempotencia, rechazo de conflictos, validación contable y reversión. Esta evidencia valida el código del módulo; el administrador debe verificar su entorno y configuración.
 
 ## Qué hace
 
@@ -29,26 +23,21 @@ sustituye la aceptación del entorno específico de cada cliente.
 - valida empresa, moneda, fecha, cuentas, centros de costo y balance;
 - crea únicamente movimientos contables en borrador;
 - evita duplicados con una identidad externa y un hash del contenido;
-- conserva un registro de auditoría sin copiar el detalle personal de la nómina;
+- conserva auditoría sin copiar el detalle personal de la nómina;
 - genera reversiones idempotentes sin borrar el movimiento original.
 
-El módulo no calcula nómina, no publica asientos, no guarda credenciales de
-StaffPass y no abre controladores anónimos.
+El módulo no calcula nómina, no publica asientos, no guarda credenciales de StaffPass y no abre controladores anónimos.
 
 ## Requisitos
 
 - Odoo.sh o una instalación administrada que permita módulos Python externos;
 - plan de Odoo con acceso a la API externa;
 - usuario técnico exclusivo, API key y acceso solo a las empresas autorizadas;
-- diario general dedicado y cuentas contables previamente configuradas;
+- diario general dedicado y cuentas contables configuradas;
 - conexión HTTPS pública o túnel explícito para instalaciones privadas.
 
-Odoo Online no permite instalar este tipo de módulo Python de terceros. La
-instalación debe hacerse en Odoo.sh o en una instalación administrada que
-permita módulos Python externos.
+Odoo Online no permite instalar este tipo de módulo Python de terceros.
 
-<Warning>
-Este conector no convierte las rutas internas del panel en una API pública. La
-API Enterprise general de StaffPass continúa en estado **No disponible** hasta
-que existan `api_enabled`, tokens de integración y los gates documentados.
-</Warning>
+<Note>
+La API Enterprise de StaffPass también está disponible, pero es un producto separado del transporte Odoo: requiere plan Enterprise, `api_enabled` y un token de integración dedicado.
+</Note>
