@@ -3,8 +3,9 @@
 [![Validate documentation](https://github.com/Staff-Pass/staffpass-developer-docs/actions/workflows/validate.yml/badge.svg)](https://github.com/Staff-Pass/staffpass-developer-docs/actions/workflows/validate.yml) · [StaffPass](https://staffpass.app/) · [Apache-2.0](LICENSE)
 
 Documentación pública para integradores que conectarán sistemas externos con la
-futura API Enterprise de StaffPass. El sitio web todavía no está desplegado y
-no contiene endpoints operativos.
+futura API Enterprise de StaffPass. El sitio está publicado en
+[staff-pass.mintlify.site](https://staff-pass.mintlify.site) y no contiene
+endpoints operativos mientras la API Enterprise siga sin estar disponible.
 
 ## Decisiones de seguridad
 
@@ -15,6 +16,8 @@ no contiene endpoints operativos.
 - Las rutas administrativas existentes no se copian al portal.
 - La visibilidad acordada para las guías es pública. La referencia ejecutable
   seguirá ausente hasta implementar los gates Enterprise.
+- Mintlify despliega automáticamente la rama `main`; el MCP público se expone
+  en [staff-pass.mintlify.site/mcp](https://staff-pass.mintlify.site/mcp).
 
 ## Validación local
 
