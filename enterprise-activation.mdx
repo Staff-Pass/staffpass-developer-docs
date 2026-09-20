@@ -30,6 +30,44 @@ implementada. No se debe prometer una fecha, token o endpoint hasta que el
 backend y sus pruebas implementen el control completo.
 </Warning>
 
+## Qué debe implementarse para abrir la API
+
+Eliminar el aviso sin implementar estos controles solo expondría rutas internas.
+La API puede declararse disponible cuando se complete este orden de trabajo:
+
+1. **Entitlement por empresa.** Agregar al esquema una fuente autoritativa para
+   el plan vigente y `api_enabled`, cerrada por defecto y con auditoría de cada
+   cambio.
+2. **Credenciales de integración.** Crear un modelo ligado a una sola empresa
+   con identificador público, hash del secreto, scopes, expiración, revocación,
+   último uso y ambiente. El secreto se muestra una sola vez y nunca se guarda
+   ni registra en texto claro.
+3. **Autenticación dedicada.** Implementar un guard distinto de Firebase que
+   valide el token, resuelva el tenant desde la credencial y compruebe en cada
+   solicitud plan Enterprise, `api_enabled`, vigencia, revocación y scopes. El
+   cliente nunca debe elegir su `company_id` mediante un header.
+4. **API externa versionada.** Crear controladores y DTOs bajo una superficie
+   estable como `/integrations/v1`; no reutilizar directamente los controladores
+   del panel, TimeClock o tareas internas.
+5. **Protecciones operativas.** Aplicar rate limits por token y empresa,
+   idempotency keys en escrituras, request IDs, errores estables y auditoría sin
+   secretos ni datos personales innecesarios.
+6. **Contrato público.** Generar OpenAPI únicamente desde los controladores
+   externos y publicar base URL, scopes, ejemplos, límites y política de
+   versiones cuando exista al menos una operación aprobada.
+7. **Pruebas y piloto.** Cubrir tokens inválidos, vencidos y revocados;
+   aislamiento entre empresas; scopes; rate limits; idempotencia; y ausencia de
+   secretos en logs. Después, validar en staging y con una empresa piloto antes
+   de habilitar producción.
+
+## Criterio para retirar el aviso
+
+El aviso puede retirarse y `openapi.json` puede publicar operaciones solo
+cuando una prueba automatizada demuestre todos los gates anteriores y exista
+una base URL externa desplegada. La primera entrega puede ser pequeña: un único
+recurso de solo lectura, un scope y un cliente piloto. La seguridad y el
+aislamiento multiempresa no pueden posponerse.
+
 ## Desactivación y compromiso
 
 Ante pérdida, exposición o resultado incierto:

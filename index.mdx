@@ -4,10 +4,11 @@ description: "Estado verificable de la API Enterprise y las integraciones de Sta
 ---
 
 <Warning>
-La API de integraciones para clientes todavía no está disponible. El backend
-actual no implementa el plan Enterprise, la bandera `api_enabled`, tokens de
-integración ni un guard dedicado para esos tokens. Por eso esta documentación
-no publica endpoints operativos ni ofrece credenciales de prueba.
+El conector oficial de Odoo ya está disponible. La API Enterprise general para
+integraciones personalizadas todavía no está disponible: el backend no
+implementa el plan Enterprise, la bandera `api_enabled`, tokens de integración
+ni un guard dedicado para esos tokens. Por eso aún no se publican endpoints
+operativos ni credenciales de prueba para esa API.
 </Warning>
 
 **Estado público de la API: No disponible.**
@@ -27,6 +28,7 @@ válido. Cumplir solo una o dos condiciones no autorizará una solicitud.
 | Área | Estado | Qué significa |
 | --- | --- | --- |
 | Portal de documentación | Publicado | El contenido se despliega desde la rama `main` en [staff-pass.mintlify.site](https://staff-pass.mintlify.site). |
+| Conector oficial de Odoo | Publicado y gratuito | Disponible para [Odoo 19](https://apps.odoo.com/apps/modules/19.0/staffpass_payroll_connector) y [Odoo 18](https://apps.odoo.com/apps/modules/18.0/staffpass_payroll_connector). |
 | API Enterprise | `NOT_IMPLEMENTED` | No hay endpoints externos autorizados, activación ni tokens de integración. |
 | OpenAPI público | Sin operaciones | La especificación contiene `paths: {}` para evitar publicar rutas internas. |
 
@@ -39,5 +41,5 @@ clientes.
 ## Siguiente paso
 
 Consulta [Primeros pasos](getting-started) para saber qué puede prepararse hoy y
-[Activación Enterprise](enterprise-activation) para conocer los gates que deben
-existir antes de entregar un token.
+[Activación Enterprise](enterprise-activation) para ver exactamente qué debe
+implementarse antes de entregar un token y abrir la API.
