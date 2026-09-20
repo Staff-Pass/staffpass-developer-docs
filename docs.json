@@ -43,6 +43,12 @@
         ]
       },
       {
+        "group": "Conectores oficiales",
+        "pages": [
+          "integrations/odoo"
+        ]
+      },
+      {
         "group": "Contrato API",
         "pages": [
           "maintenance/versioning"
