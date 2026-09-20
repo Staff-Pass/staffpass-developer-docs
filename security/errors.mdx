@@ -35,7 +35,6 @@ administrativa debe considerarse parte del contrato externo.
 
 ## Operaciones sensibles
 
-Para pagos, bancos, SIPE, DGI, Odoo, asistencia o cualquier proveedor externo,
-un timeout no demuestra fracaso. Conserva la clave idempotente y la evidencia,
-reconcilia con la fuente de verdad y evita una segunda operación hasta resolver
-el resultado.
+Para cualquier mutación sensible en un sistema externo, un timeout no demuestra
+fracaso. Conserva la clave idempotente y la evidencia, reconcilia con la fuente
+de verdad y evita una segunda operación hasta resolver el resultado.
