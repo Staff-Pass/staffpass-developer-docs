@@ -1,10 +1,10 @@
-# Portal de integraciones de StaffPass
+# StaffPass Developer Documentation
 
 [![Validate documentation](https://github.com/Staff-Pass/staffpass-developer-docs/actions/workflows/validate.yml/badge.svg)](https://github.com/Staff-Pass/staffpass-developer-docs/actions/workflows/validate.yml) · [StaffPass](https://staffpass.app/) · [Apache-2.0](LICENSE)
 
-Repositorio público del portal Mintlify para documentar la futura API Enterprise
-y el estado verificable de integraciones. El sitio web todavía no está desplegado
-y no contiene endpoints externos operativos.
+Documentación pública para integradores que conectarán sistemas externos con la
+futura API Enterprise de StaffPass. El sitio web todavía no está desplegado y
+no contiene endpoints operativos.
 
 ## Decisiones de seguridad
 
@@ -15,20 +15,6 @@ y no contiene endpoints externos operativos.
 - Las rutas administrativas existentes no se copian al portal.
 - La visibilidad acordada para las guías es pública. La referencia ejecutable
   seguirá ausente hasta implementar los gates Enterprise.
-
-## Evidencia auditada
-
-La preparación se basó en:
-
-- `src/auth/firebase-auth.strategy.ts`
-- `src/auth/authenticated-user.ts`
-- `src/config/http-exception.filter.ts`
-- `src/config/rate-limit.ts`
-- `src/attendance-integrations/`
-- `src/payroll/integrations/`, `src/payroll/sipe/`, `src/payroll/dgi/` y
-  `src/payroll/bank/`
-- `prisma/schema.prisma`
-- `docs/attendance-integrations/` y `docs/payroll-integrations/`
 
 ## Validación local
 
@@ -44,15 +30,3 @@ esa CLI como dependencia persistente por ahora: el audit de su árbol temporal
 reportó 15 vulnerabilidades altas, dos moderadas y dependencias deprecadas. La
 CLI no se agregó a este repositorio ni a su lockfile. Revisar un preview tampoco
 autoriza publicación, DNS ni conexión del repositorio con Mintlify.
-
-## Mintlify Starter
-
-Al 20 de septiembre de 2026, la página oficial de precios muestra Starter a
-USD 0/mes, sin tarjeta, con cinco editores, dominio personalizado,
-autenticación, Git sync y API playground. Las condiciones pueden cambiar y se
-deben verificar de nuevo antes de activar el sitio.
-
-La documentación privada automática puede evaluarse con la autenticación de
-Mintlify incluida en Starter. Si sus condiciones cambian o no cubren el control
-requerido, la alternativa sin costo de licencia es servir Scalar abierto dentro
-del portal existente, una vez que exista un OpenAPI externo real.

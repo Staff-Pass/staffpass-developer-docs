@@ -36,17 +36,6 @@
         ]
       },
       {
-        "group": "Integraciones",
-        "pages": [
-          "integrations/status",
-          "integrations/projects",
-          "integrations/repository-blueprint",
-          "integrations/attendance",
-          "integrations/accounting",
-          "integrations/payroll"
-        ]
-      },
-      {
         "group": "Referencia API",
         "pages": [
           "api-reference/overview",
@@ -54,12 +43,9 @@
         ]
       },
       {
-        "group": "Mantenimiento",
+        "group": "Contrato API",
         "pages": [
-          "maintenance/versioning",
-          "maintenance/information-architecture",
-          "maintenance/hosting-evaluation",
-          "maintenance/release-checklist"
+          "maintenance/versioning"
         ]
       }
     ]
