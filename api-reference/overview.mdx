@@ -28,6 +28,16 @@ Authorization: Bearer sp_live.<public_id>.<secret>
 
 Los tokens de prueba usan el prefijo `sp_test` y no son válidos como credenciales de producción. No uses tokens Firebase ni envíes un `company_id`: el backend resuelve la empresa desde la credencial.
 
+## MCP
+
+El servidor MCP público está en:
+
+```text
+https://staff-pass.mintlify.site/mcp
+```
+
+Incluye búsqueda sobre esta documentación. Las dos consultas de empleados están habilitadas selectivamente como herramientas MCP y conservan la autenticación Bearer definida en OpenAPI; el cliente solicitará el token cuando se intente ejecutar una herramienta protegida. Mintlify no recibe una credencial pública compartida.
+
 ## Límites del contrato
 
 Esta versión es de solo lectura y publica exclusivamente empleados. Las rutas administrativas, TimeClock, nómina, bancos, DGI, SIPE, notificaciones y proveedores permanecen fuera del contrato externo.

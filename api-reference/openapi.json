@@ -100,6 +100,13 @@
           "500": {
             "$ref": "#/components/responses/InternalError"
           }
+        },
+        "x-mint": {
+          "mcp": {
+            "enabled": true,
+            "name": "list-staffpass-employees",
+            "description": "Lista empleados del tenant autorizado. Requiere un token de integración con employees:read."
+          }
         }
       }
     },
@@ -156,6 +163,13 @@
           },
           "500": {
             "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "x-mint": {
+          "mcp": {
+            "enabled": true,
+            "name": "get-staffpass-employee",
+            "description": "Consulta un empleado por UUID dentro del tenant autorizado. Requiere un token de integración con employees:read."
           }
         }
       }
