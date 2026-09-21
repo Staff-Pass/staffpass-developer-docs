@@ -68,6 +68,7 @@ for (const route of expectedRoutes) {
   if (operation?.['x-mint']?.mcp?.enabled !== true) {
     failures.push(`openapi.json: falta herramienta MCP explícita en GET ${route}`);
   }
+}
 
 if (openapi.servers?.[0]?.url !== 'https://api.staffpass.app') {
   failures.push('openapi.json: base URL pública incorrecta');
