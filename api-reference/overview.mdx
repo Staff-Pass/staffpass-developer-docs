@@ -36,7 +36,7 @@ El servidor MCP público está en:
 https://staff-pass.mintlify.site/mcp
 ```
 
-Incluye búsqueda sobre esta documentación. Las dos consultas de empleados están habilitadas selectivamente como herramientas MCP y conservan la autenticación Bearer definida en OpenAPI; el cliente solicitará el token cuando se intente ejecutar una herramienta protegida. Mintlify no recibe una credencial pública compartida.
+El MCP activo permite buscar y leer esta documentación y el OpenAPI desde clientes compatibles. Las dos consultas de empleados están marcadas selectivamente con `x-mint.mcp`, conservando la autenticación Bearer, pero su aparición como herramientas ejecutables depende de que el plan de Mintlify permita exponer endpoints OpenAPI. Mientras `tools/list` no las muestre, llama la API por HTTPS con tu token; no existe una credencial pública compartida.
 
 ## Límites del contrato
 
